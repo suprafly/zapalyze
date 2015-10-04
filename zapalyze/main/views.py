@@ -7,6 +7,7 @@ import base64
 import email
 import datetime
 
+
 format_YYMMDD = lambda datetime_obj: datetime_obj.strftime('%Y/%m/%d')
 format_daterange = lambda from_date, until_date: "after:%s before:%s" % (format_YYMMDD(from_date), format_YYMMDD(until_date))
 
@@ -15,11 +16,9 @@ def get_daily_task_summary_list(user, social, daterange_str=None):
     if daterange_str is None:
         # No range specified is the default case, so get them all
         daterange_str = "before: %s" % format_YYMMDD(datetime.date.today())
-    api_str = 'https://www.googleapis.com/gmail/v1/users/me/messages?q="in:inbox from:\"contact@zapier.com\" %s subject:\"Your Daily Task Summary\"' % daterange_str
-    response = requests.get(
-        api_str,
-        params={'access_token': social.extra_data['access_token']}
-    )
+
+    api_str = 'https://www.googleapis.com/gmail/v1/users/me/messages?q="in:inbox from:\"contact@zapier.com\" %s subject:\"Your Daily Task Summary\""' % daterange_str
+    response = requests.get( api_str, params={'access_token': social.extra_data['access_token']} )
     if response:
         if 'messages' in response.json():
             mime_messages = get_mime_messages(social, response.json()['messages'])
@@ -55,7 +54,12 @@ def index(request):
         task_summary_list = get_daily_task_summary_list(user, social, format_daterange(yesterday, today))
 
         for item in task_summary_list:
-            print item
+            if item.is_multipart():
+                for payload in item.get_payload():
+                    decoded_payload = payload.get_payload(decode=True)
+                    print decoded_payload
+            else:
+                print item.get_payload()
 
     ctx = {'request': request, 'user': user}
     context = RequestContext(request, ctx)
