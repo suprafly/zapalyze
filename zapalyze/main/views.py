@@ -11,7 +11,11 @@ import datetime
 format_YYMMDD = lambda datetime_obj: datetime_obj.strftime('%Y/%m/%d')
 format_daterange = lambda from_date, until_date: "after:%s before:%s" % (format_YYMMDD(from_date), format_YYMMDD(until_date))
 
-def get_daily_task_summary_list(user, social, daterange_str=None):
+def get_all_historical_daily_summaries(user, social):
+    daterange_str = "before: %s" % format_YYMMDD(datetime.date.today())
+    return get_daily_task_summary_list(user, social, daterange_str)
+
+def get_daily_task_summary_list(user, social, daterange_str):
     mime_messages = []
     if daterange_str is None:
         # No range specified is the default case, so get them all
@@ -62,6 +66,10 @@ def index(request):
             else:
                 payload_list.append(task_summary_email.get_payload(decode=True))
 
+            # For some reason, each "message" in task_summary_list decodes 2 payloads.
+            # The first is the email content as text and the second is the full html.
+
+            # Need to create a "template" for extracting the zap & task information from thes emails.
             print payload_list[0]
 
     ctx = {'request': request, 'user': user}
