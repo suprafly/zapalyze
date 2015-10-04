@@ -1,0 +1,16 @@
+
+Setup
+-----
+
+pip install django
+pip install python-social-auth
+
+
+Google Auth
+-----------
+
+- Follow these instructions: https://developers.google.com/gmail/api/quickstart/python
+
+
+
+
