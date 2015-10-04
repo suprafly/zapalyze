@@ -11,6 +11,7 @@ format_YYMMDD = lambda datetime_obj: datetime_obj.strftime('%Y/%m/%d')
 format_daterange = lambda from_date, until_date: "after:%s before:%s" % (format_YYMMDD(from_date), format_YYMMDD(until_date))
 
 def get_daily_task_summary_list(user, social, daterange_str=None):
+    mime_messages = []
     if daterange_str is None:
         # No range specified is the default case, so get them all
         daterange_str = "before: %s" % format_YYMMDD(datetime.date.today())
@@ -21,13 +22,14 @@ def get_daily_task_summary_list(user, social, daterange_str=None):
     )
     if response:
         if 'messages' in response.json():
-            return get_mime_messages(social, response.json()['messages'])
+            mime_messages = get_mime_messages(social, response.json()['messages'])
         else:
-            # No messages returned
+            #! Logger: No messages returned
             pass
     else:
-        # No response
+        #! Logger: No response
         pass
+    return mime_messages
 
 def get_mime_messages(social, json_msgs):
     messages = []
