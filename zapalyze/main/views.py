@@ -53,13 +53,16 @@ def index(request):
         yesterday = today - datetime.timedelta(days=1)
         task_summary_list = get_daily_task_summary_list(user, social, format_daterange(yesterday, today))
 
-        for item in task_summary_list:
-            if item.is_multipart():
-                for payload in item.get_payload():
+        for task_summary_email in task_summary_list:
+            payload_list = []
+            if task_summary_email.is_multipart():
+                for payload in task_summary_email.get_payload():
                     decoded_payload = payload.get_payload(decode=True)
-                    print decoded_payload
+                    payload_list.append(decoded_payload)
             else:
-                print item.get_payload()
+                payload_list.append(task_summary_email.get_payload(decode=True))
+
+            print payload_list[0]
 
     ctx = {'request': request, 'user': user}
     context = RequestContext(request, ctx)
