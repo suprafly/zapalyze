@@ -13,10 +13,11 @@ class Zap(models.Model):
     name = models.CharField(max_length=300)
 
 
-class Task(models.Model):
+class TaskSummary(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL)
     zap = models.ForeignKey(Zap)
-    description = models.CharField(max_length=300)
-    timestamp = models.DateTimeField()
+    number_of_tasks = models.IntegerField()
+    date = models.DateField()
 
 
 
