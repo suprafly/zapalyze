@@ -1,6 +1,8 @@
 from __future__ import division
 from django.shortcuts import render, render_to_response
 
+import logging
+
 from django.template.context import RequestContext
 import requests
 import json
@@ -11,9 +13,15 @@ import datetime
 from main.models import Zap, TaskSummary
 
 
+# -------- Helpers -------------------------------------------------------------------------------
+
 format_YYMMDD = lambda datetime_obj: datetime_obj.strftime('%Y/%m/%d')
 format_daterange = lambda from_date, until_date: "after:%s before:%s" % (format_YYMMDD(from_date), format_YYMMDD(until_date))
 make_list_of_tuples_from_adjacent_elements = lambda this_list: zip(this_list[0::2], this_list[1::2])
+filter_email_list = lambda msg: filter(None, (msg.split('\n'))) # Remove newlines and empty strings
+parse_email_by_template = lambda email_list, template: [x for x in email_list if x not in template]
+extract_task_count = lambda task_str: task_str.split(' ')[1] # Use on strings with the format: 'automated 5 tasks'
+get_text_only_payload = lambda payload_list: payload_list[0] # format of payload_list = [text_paylod, html_payload]
 
 email_template = [
     "Learn how Zapier saved you time today",
@@ -34,6 +42,8 @@ email_template = [
     "makes you happier :)"
 ]
 
+# -------- Functions ------------------------------------------------------------------------------
+
 def get_all_historical_daily_summaries(user, social):
     daterange_str = "before: %s" % format_YYMMDD(datetime.date.today())
     return get_daily_task_summary_list(user, social, daterange_str)
@@ -50,10 +60,10 @@ def get_daily_task_summary_list(user, social, daterange_str):
         if 'messages' in response.json():
             mime_messages = get_mime_messages(social, response.json()['messages'])
         else:
-            #! Logger: No messages returned
+            # No messages returned
             pass
     else:
-        #! Logger: No response
+        # No response returned
         pass
     return mime_messages
 
@@ -79,27 +89,24 @@ def get_email_payload_list(task_summary_email):
     payload_list = []
     if task_summary_email.is_multipart():
         for payload in task_summary_email.get_payload():
-            decoded_payload = payload.get_payload(decode=True)
-            payload_list.append(decoded_payload)
+            payload_list.append(payload.get_payload(decode=True))
     else:    
         payload_list.append(task_summary_email.get_payload(decode=True))
     return payload_list
 
 def get_parsed_email(email_msg):
-    # Remove newlines and empty strings
-    filtered_email_list = filter(None, (email_msg.split('\n')))
+    filtered_email_list = filter_email_list(email_msg)
+    parsed_email = parse_email_by_template(filtered_email_list, email_template)
+    return remove_uncaught_text(parsed_email)
 
-    # Filter based on email template
-    parsed_email = [x for x in filtered_email_list if x not in email_template]
-    # Pop the 0 element because it will match the following regex:
-    # 'Hey *, here's how Zapier saved you time over the past day.'
+def remove_uncaught_text(parsed_email):
+    # Remove: 'Hey *, here's how Zapier saved you time over the past day.'
     parsed_email.pop(0)
     return parsed_email
 
 def create_zaps_and_tasksummaries(user, zap_task_tuple_list, timestamp):
     for zap_name, task_str in zap_task_tuple_list:
-        # Parse out # of tasks. task_str has the format: 'automated 5 tasks'
-        number_of_tasks = task_str.split(' ')[1]
+        number_of_tasks = extract_task_count(task_str)
         tasks_date = timestamp.date()
         zap = None
         if not Zap.objects.filter(owner=user, name=zap_name).exists():
@@ -127,9 +134,7 @@ def index(request):
             task_summary_list = get_daily_task_summary_list(user, social, format_daterange(yesterday, today))
 
         for task_summary_email, timestamp in task_summary_list:
-            # Each "message" in task_summary_list decodes 2 payloads.
-            # The first is the email content as text and the second is the full html.
-            email_msg = get_email_payload_list(task_summary_email)[0]
+            email_msg = get_text_only_payload(get_email_payload_list(task_summary_email))
             parsed_email = get_parsed_email(email_msg)
             total_automated_tasks = parsed_email.pop(0)
             zap_task_tuple_list = make_list_of_tuples_from_adjacent_elements(parsed_email)
