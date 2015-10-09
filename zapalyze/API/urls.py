@@ -6,5 +6,6 @@ from API import views
 
 urlpatterns = [
     # API Get calls
-    url(r'^get_task_data/$', views.get_task_data, name='get_task_data'),
+    url(r'^get_task_data_tsv/$', views.get_task_data_tsv, name='get_task_data_tsv'),
+    url(r'^get_task_data_table_json/$', views.get_task_data_table_json, name='get_task_data_table_json'),
 ]

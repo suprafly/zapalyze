@@ -1,116 +1,101 @@
 {% extends 'base.html' %}
 
+{% block head %}
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+{% endblock %}
+
 <script> //! Have wrap it in a script tag so that it appears as javascript
     {% block head_onLoad %}
 
+        google.load('visualization', '1', {packages: ['corechart', 'line']});
+        google.setOnLoadCallback(drawChart);
 
-            var svg1_url = "{% url 'api:get_task_data' %}";
-            var svg1 = dimple.newSvg("#task_summary_chart", "100%", 400);
-
-            var defaultColors = [
-                new dimple.color("#3bd4f9", "#07c4f2", 1), // blue
-                new dimple.color("#2ecc71", "#2abc68", 1), // green
-                new dimple.color("#f89406", "#e58906", 1), // orange
-                new dimple.color("#a259cf", "#913bc6", 1), // purple
-                new dimple.color("#e74c3c", "#c0392b", 1), // red
-                new dimple.color("#36d7b7", "#29d0af", 1), // turquoise
-                new dimple.color("#f8d106", "#e4c41a", 1), // yellow
-                new dimple.color("#95a5a6", "#8a9c9d", 1)  // gray
-              ],
-              ring_defaultColors = [
-                new dimple.color("#3bd4f9", "#07c4f2", 1), // blue
-                new dimple.color("#2ecc71", "#2abc68", 1), // green
-                new dimple.color("#f89406", "#e58906", 1), // orange
-                new dimple.color("#a259cf", "#913bc6", 1), // purple
-                new dimple.color("#e74c3c", "#c0392b", 1), // red
-                new dimple.color("#36d7b7", "#29d0af", 1), // turquoise
-                new dimple.color("#f8d106", "#e4c41a", 1), // yellow
-                new dimple.color("#95a5a6", "#8a9c9d", 1)  // gray
-              ];
-
-              //! Query server to see if there is any chart data before trying to grab it 
-              var posting = $.post(
-                    "{% url 'api:get_task_data' %}", 
-                    {
-                        csrfmiddlewaretoken: getCookie('csrftoken'),
-                        user: "{{ user }}",
-                        time_slice: time_slice,
-                        date_range: get_interval(time_slice)
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
-                )
-                // Add the entry to list
-                .done(function (data) {
-                    if (data.has_data) {
-                        d3.tsv(svg1_url + new_time_interval, function (data) {
-                            if (data.length > 0) {
-                                var myChart = new dimple.chart(svg1, data);
-                                // var yAxis = myChart.addMeasureAxis("y", "Words/Min");
-                                var xAxis = myChart.addCategoryAxis("x", ["Zap", "Task Count"]);
+                }
+            }
+            return cookieValue;
+        }
 
-                                xAxis.addOrderRule("Date");
+        function drawChart() {
+            var posting = $.get("{% url 'api:get_task_data_table_json' %}?pk={{ user.pk }}", function (jsonData) {
+                    //! This is some test data. Leave it in for now, but make sure to pull it out later.
+                    // jsonData = {
+                    //     "rows":[
+                    //             {"c":[
+                    //                 {"v":"Oct 04, 2015"},
+                    //                 {"v":"12"},
+                    //                 {"v":"0"},
+                    //                 {"v":"0"}
+                    //                 ]
+                    //             },
+                    //             {"c":[
+                    //                 {"v":"Oct 05, 2015"},
+                    //                 {"v":"0"},
+                    //                 {"v":"5"},
+                    //                 {"v":"3"}
+                    //                 ]
+                    //             },
+                    //             {"c":[
+                    //                 {"v":"Oct 06, 2015"},
+                    //                 {"v":"0"},
+                    //                 {"v":"7"},
+                    //                 {"v":"0"}
+                    //                 ]
+                    //             },
+                    //             {"c":[
+                    //                 {"v":"Oct 07, 2015"},
+                    //                 {"v":"0"},
+                    //                 {"v":"0"},
+                    //                 {"v":"0"}
+                    //                 ]
+                    //             },
+                    //             {"c":[
+                    //                 {"v":"Oct 08, 2015"},
+                    //                 {"v":"0"},
+                    //                 {"v":"0"},
+                    //                 {"v":"0"}
+                    //                 ]
+                    //             },
+                    //             {"c":[
+                    //                 {"v":"Oct 09, 2015"},
+                    //                 {"v":"0"},
+                    //                 {"v":"7"},
+                    //                 {"v":"0"}
+                    //                 ]
+                    //             }
+                    //     ],
+                    //     "cols":[
+                    //             {"type":"string","id":"Date","label":"Date"},
+                    //             {"type":"number","id":"Evernote to Drive","label":"Evernote to Drive"},
+                    //             {"type":"number","id":"InstaZap","label":"InstaZap"},
+                    //             {"type":"number","id":"Gmail Star to Drive Doc","label":"Gmail Star to Drive Doc"}
+                    //             ]
+                    // };
 
-                                // Add "Word Count" and "Time" to tooltip, but "Project" is last because we want that to show as the
-                                // grouped value
-                                // var mySeries = myChart.addSeries(["Word Count", "Time", "Project"], dimple.plot.bar, [xAxis, yAxis]);
-
-                                myChart.addLegend(250, 27, 510, 20, "left");
-
-                                myChart.defaultColors = defaultColors;
-
-                                mySeries.afterDraw = function (s, d) {
-                                    var shape = d3.select(s),
-                                        goldenRatio = 1.61803398875;
-
-                                    // Add a rectangle to the bar giving a nice style.  The idea was borrowed
-                                    // from sirocco's question here:
-                                    // http://stackoverflow.com/questions/25044608/dimplejs-barchart-styling-columns
-                                    svg1.append("rect")
-                                      .attr("x", shape.attr("x"))
-                                      .attr("y", shape.attr("y"))
-                                      .attr("height", shape.attr("height"))
-                                      .attr("width", (0.1 * shape.attr("width")) / goldenRatio)
-                                      .style("fill", shape.style("stroke"))
-                                      .style("opacity", 1)
-                                      .style("pointer-events", "none");
-
-                                    // Draw without a border
-                                    shape.attr("stroke", shape.attr("fill"));
-                                  };
-
-                                myChart.draw();
-
-                                //! Removes the y-axis line
-                                // yAxis.shapes.selectAll("line,path").remove();
-                                
-                                //! Removes the x-axis line
-                                // xAxis.shapes.selectAll("path").remove();
-                                // xAxis.titleShape.text("");
-
-                                svg1.append("text")
-                                   .attr("x", myChart._xPixels() + myChart._widthPixels() / 2)
-                                   .attr("y", myChart._yPixels() - 20)
-                                   .style("text-anchor", "middle")
-                                   .style("font-family", "sans-serif")
-                                   .style("font-weight", "bold")
-                                   .text("Daily Task Summary");
-                            }
-                            else { //! No data, display a message instead
-
-                            }
-                        });
-                        svg1.append("rect")
-                            .attr("width", "100%")
-                            .attr("height", "100%")
-                            .style("fill", "#ffffff");       
-
-                    } // end if has_data
-                    else {
-                      //! No data!
-                      // toggle_error();
-                    }
-
-              }); // end post                 
-
+                    var data = new google.visualization.DataTable(jsonData);
+                    var options = {
+                        title: 'Task Summary',
+                        vAxis: {
+                            title: 'Tasks Performed',
+                        },
+                        pointSize: 5,
+                        // width: 1500,
+                        height: 500,
+                    };
+                    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                    chart.draw(data, options);
+                }); // end post   
+            } // end drawChart
 
     {% endblock %}
 </script>
@@ -134,9 +119,10 @@
                 {% endif %}
             </ul>
         </p>
-
-        <div id="task_summary_chart" class="barchart">
-        </div>
-
     </div>
+
+    <div id="task_summary_chart"></div>
+   
+    <div id="chart_div"></div>
+
 {% endblock %}
