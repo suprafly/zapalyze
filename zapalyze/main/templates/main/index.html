@@ -28,60 +28,6 @@
 
         function drawChart() {
             var posting = $.get("{% url 'api:get_task_data_table_json' %}?pk={{ user.pk }}", function (jsonData) {
-                    //! This is some test data. Leave it in for now, but make sure to pull it out later.
-                    // jsonData = {
-                    //     "rows":[
-                    //             {"c":[
-                    //                 {"v":"Oct 04, 2015"},
-                    //                 {"v":"12"},
-                    //                 {"v":"0"},
-                    //                 {"v":"0"}
-                    //                 ]
-                    //             },
-                    //             {"c":[
-                    //                 {"v":"Oct 05, 2015"},
-                    //                 {"v":"0"},
-                    //                 {"v":"5"},
-                    //                 {"v":"3"}
-                    //                 ]
-                    //             },
-                    //             {"c":[
-                    //                 {"v":"Oct 06, 2015"},
-                    //                 {"v":"0"},
-                    //                 {"v":"7"},
-                    //                 {"v":"0"}
-                    //                 ]
-                    //             },
-                    //             {"c":[
-                    //                 {"v":"Oct 07, 2015"},
-                    //                 {"v":"0"},
-                    //                 {"v":"0"},
-                    //                 {"v":"0"}
-                    //                 ]
-                    //             },
-                    //             {"c":[
-                    //                 {"v":"Oct 08, 2015"},
-                    //                 {"v":"0"},
-                    //                 {"v":"0"},
-                    //                 {"v":"0"}
-                    //                 ]
-                    //             },
-                    //             {"c":[
-                    //                 {"v":"Oct 09, 2015"},
-                    //                 {"v":"0"},
-                    //                 {"v":"7"},
-                    //                 {"v":"0"}
-                    //                 ]
-                    //             }
-                    //     ],
-                    //     "cols":[
-                    //             {"type":"string","id":"Date","label":"Date"},
-                    //             {"type":"number","id":"Evernote to Drive","label":"Evernote to Drive"},
-                    //             {"type":"number","id":"InstaZap","label":"InstaZap"},
-                    //             {"type":"number","id":"Gmail Star to Drive Doc","label":"Gmail Star to Drive Doc"}
-                    //             ]
-                    // };
-
                     var data = new google.visualization.DataTable(jsonData);
                     var options = {
                         title: 'Task Summary',
