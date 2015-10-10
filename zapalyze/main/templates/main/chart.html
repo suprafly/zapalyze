@@ -30,13 +30,12 @@
             var posting = $.get("{% url 'api:get_task_data_table_json' %}?pk={{ user.pk }}", function (jsonData) {
                     var data = new google.visualization.DataTable(jsonData);
                     var options = {
-                        title: 'Task Summary',
                         vAxis: {
                             title: 'Tasks Performed',
                         },
                         pointSize: 5,
                         // width: 1500,
-                        height: 500,
+                        height: 675,
                     };
                     var chart = new google.visualization.LineChart(document.getElementById('task_summary_chart'));
                     chart.draw(data, options);
@@ -47,19 +46,27 @@
 </script>
 
 {% block header %}
-    <h1>zapalyze!</h1>
-    <div class="pull-right">
-        {% if user and not user.is_anonymous %}
-                <a>{{ user.get_full_name|default:user.username }}</a>
-                <a href="{% url 'auth:logout' %}?next={{ request.path }}">(Logout)</a>
-        {% else %}
-                <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
-        {% endif %}
+    <div id="header-content">
+        <h1>zapalyze!</h1>
+        <div class="pull-right">
+            {% if user and not user.is_anonymous %}
+                    <a>{{ user.get_full_name|default:user.username }}</a>
+                    <a href="{% url 'auth:logout' %}?next={{ request.path }}">(Logout)</a>
+            {% else %}
+                    <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
+            {% endif %}
         </div>
+    </div>
 {% endblock %}
 
 {% block main %}
     <div id="content">
-        <div id="task_summary_chart"></div>
+        <div id="content-header">
+            <h1>Daily Task Summary</h1>
+        </div>
+
+        <div id="content-main">
+            <div id="task_summary_chart"></div>
+        </div>
     </div>
 {% endblock %}

@@ -121,6 +121,7 @@ def create_zaps_and_task_summaries(user, zap_task_tuple_list, timestamp):
 
 def index(request):
     user = request.user
+    context = RequestContext(request, {'request': request, 'user': user})
     if user.is_authenticated():
         social = user.social_auth.get(provider='google-oauth2')
         task_summary_list = []    
@@ -137,9 +138,8 @@ def index(request):
             total_automated_tasks = parsed_email.pop(0)
             zap_task_tuple_list = tuple_list_from_adjacent_elements(parsed_email)
             create_zaps_and_task_summaries(user, zap_task_tuple_list, timestamp)
-
-    ctx = {'request': request, 'user': user}
-    context = RequestContext(request, ctx)
-    return render_to_response('main/index.html', context_instance=context)
+        return render_to_response('main/chart.html', context_instance=context)
+    else:
+        return render_to_response('main/index.html', context_instance=context)
 
 

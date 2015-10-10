@@ -1,0 +1,101 @@
+body {
+    background-color: #fff;
+    font-color: #3a4145;
+    font-family: 'Open Sans', Helvetica, arial, sans-serif;
+    font-size: 13px;
+    margin: 0;
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    position: relative;   
+}
+/*
+* {
+    border: 1px solid red !important;
+}
+*/
+
+*:focus {
+    outline: 0;
+}
+
+::selection {
+  background: #a0e9e0; /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: #a0e9e0; /* Gecko Browsers */
+}
+
+html {
+    box-sizing: border-box;
+    min-height: 100%;
+    height: 100%;
+}
+/*
+html a {
+    color: #2a998b;
+    text-decoration: none;
+}
+html a:hover {
+    color: #36bcab;
+    text-decoration: underline;
+}
+*/
+
+
+#header {
+    color: #fff;
+    background: linear-gradient(to top, #FC4B1D, #FE8044);
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 0.2%;
+/*    padding-bottom: 0.2%;*/
+    /*border-top: 4px solid #E4EDEA;*/
+    border-bottom: 1px solid #fc6420;
+    /*border: 2px solid blue;*/
+}
+
+#header-content {
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+#main {
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 2%;
+    /*padding-bottom: 2%;*/
+    height: 81%;
+}
+
+#content-header {
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+#content-header h1 {
+    font-weight: 300;
+}
+
+#content-main {
+    padding-right: 2%;
+}
+
+#footer {
+    background-color: #5F6C72;
+    /*background: linear-gradient(to bottom, #fff, #b5b5b5);*/
+
+    /* Only problem is that if we shrink the window, this keeps the footer frozen */
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    
+    padding-left: 6%;
+    padding-right: 6%;
+    padding-top: 0.2%;
+    height: 5%;
+}
+
+.pull-right {
+    text-align: right;
+}

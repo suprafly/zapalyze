@@ -5,7 +5,12 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{% block title %}Zapalyze!{% endblock %}</title>
+
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">
+    
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+        <title>{% block title %}zapalyze!{% endblock %}</title>
 
         <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
         <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
@@ -21,8 +26,20 @@
     </head>
 
     <body>
-        {% block main %}
-        {% endblock %}
+        <div id="header">
+            {% block header %}
+            {% endblock %}
+        </div>
+
+        <div id="main">
+            {% block main %}
+            {% endblock %}
+        </div>
+
+        <div id="footer">
+            {% block footer %}
+            {% endblock %}
+        </div>
     </body>
 </html>
 
