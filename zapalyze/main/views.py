@@ -12,16 +12,16 @@ import datetime
 
 from main.models import Zap, TaskSummary
 
-
 # -------- Helpers -------------------------------------------------------------------------------
 
 format_YYMMDD = lambda datetime_obj: datetime_obj.strftime('%Y/%m/%d')
 format_daterange = lambda from_date, until_date: "after:%s before:%s" % (format_YYMMDD(from_date), format_YYMMDD(until_date))
-make_list_of_tuples_from_adjacent_elements = lambda this_list: zip(this_list[0::2], this_list[1::2])
+tuple_list_from_adjacent_elements = lambda this_list: zip(this_list[0::2], this_list[1::2])
 filter_email_list = lambda msg: filter(None, (msg.split('\n'))) # Remove newlines and empty strings
 parse_email_by_template = lambda email_list, template: [x for x in email_list if x not in template]
 extract_task_count = lambda task_str: task_str.split(' ')[1] # Use on strings with the format: 'automated 5 tasks'
-get_text_only_payload = lambda payload_list: payload_list[0] # format of payload_list = [text_paylod, html_payload]
+text_only_payload = lambda payload_list: payload_list[0] # format of payload_list = [text_paylod, html_payload]
+ms_to_sec = lambda ms: float(ms) / 1000
 
 email_template = [
     "Learn how Zapier saved you time today",
@@ -53,7 +53,6 @@ def get_daily_task_summary_list(user, social, daterange_str):
     if daterange_str is None:
         # No range specified is the default case, so get them all
         daterange_str = "before: %s" % format_YYMMDD(datetime.date.today())
-
     api_str = 'https://www.googleapis.com/gmail/v1/users/me/messages?q="in:inbox from:\"contact@zapier.com\" %s subject:\"Your Daily Task Summary\""' % daterange_str
     response = requests.get( api_str, params={'access_token': social.extra_data['access_token']} )
     if response:
@@ -80,7 +79,7 @@ def get_mime_messages(social, json_msgs):
         msg = email_response.json()
         msg_str = base64.urlsafe_b64decode(email_response.json()['raw'].encode('ASCII'))
         mime_msg = email.message_from_string(msg_str)
-        epoch_secs = float(email_response.json()['internalDate']) / 1000
+        epoch_secs = ms_to_sec(email_response.json()['internalDate'])
         timestamp = datetime.datetime.fromtimestamp(epoch_secs)
         messages.append((mime_msg, timestamp))
     return messages
@@ -104,7 +103,7 @@ def remove_uncaught_text(parsed_email):
     parsed_email.pop(0)
     return parsed_email
 
-def create_zaps_and_tasksummaries(user, zap_task_tuple_list, timestamp):
+def create_zaps_and_task_summaries(user, zap_task_tuple_list, timestamp):
     for zap_name, task_str in zap_task_tuple_list:
         number_of_tasks = extract_task_count(task_str)
         tasks_date = timestamp.date()
@@ -118,7 +117,6 @@ def create_zaps_and_tasksummaries(user, zap_task_tuple_list, timestamp):
             new_task_summary = TaskSummary(owner=user, zap=zap, date=tasks_date, number_of_tasks=number_of_tasks)
             new_task_summary.save() 
              
-
 # -------- Views --------------------------------------------------------------------------------
 
 def index(request):
@@ -134,11 +132,11 @@ def index(request):
             task_summary_list = get_daily_task_summary_list(user, social, format_daterange(yesterday, today))
 
         for task_summary_email, timestamp in task_summary_list:
-            email_msg = get_text_only_payload(get_email_payload_list(task_summary_email))
+            email_msg = text_only_payload(get_email_payload_list(task_summary_email))
             parsed_email = get_parsed_email(email_msg)
             total_automated_tasks = parsed_email.pop(0)
-            zap_task_tuple_list = make_list_of_tuples_from_adjacent_elements(parsed_email)
-            create_zaps_and_tasksummaries(user, zap_task_tuple_list, timestamp)
+            zap_task_tuple_list = tuple_list_from_adjacent_elements(parsed_email)
+            create_zaps_and_task_summaries(user, zap_task_tuple_list, timestamp)
 
     ctx = {'request': request, 'user': user}
     context = RequestContext(request, ctx)
