@@ -48,13 +48,12 @@
 </script>
 
 {% block header %}
-    <h1>zapalyze!</h1>
-    <div class="pull-right">
+    <div class="right-bar">
         {% if user and not user.is_anonymous %}
-                <a>{{ user.get_full_name|default:user.username }}</a>
-                <a href="{% url 'auth:logout' %}?next={{ request.path }}">(Logout)</a>
+            {{ user.get_full_name|default:user.username }}
+            <a href="{% url 'auth:logout' %}?next={{ request.path }}">(Logout)</a>
         {% endif %}
-        </div>
+    </div>
 {% endblock %}
 
 

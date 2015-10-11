@@ -42,17 +42,50 @@ html a:hover {
 }
 */
 
+#top-border-span {
+    background-image: url("../images/textures/space_galaxy.jpg");
+    height: 0.5%;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+}
 
 #header {
+    background: linear-gradient(to bottom, #242544, #392780);
     color: #fff;
-    background: linear-gradient(to top, #FC4B1D, #FE8044);
     padding-left: 3%;
     padding-right: 3%;
     padding-top: 0.2%;
-/*    padding-bottom: 0.2%;*/
+    padding-bottom: 0.8%;
+    height: 5%;
     /*border-top: 4px solid #E4EDEA;*/
-    border-bottom: 1px solid #fc6420;
+    border-bottom: 1px solid #AA65CF;
     /*border: 2px solid blue;*/
+}
+
+#header a {
+    color: #F18D35;
+}
+
+#header a:hover {
+    color: #FFC591;
+}
+
+#logo {
+    letter-spacing: 3px;
+    font-weight: 800;
+    font-size: 200%;
+    text-shadow: 1px 1px #797496;
+    font-weight: bold;
+
+    padding-top: 0.75%;
+    float: left;
+}
+
+.right-bar {
+    padding-top: 1.5%;
+    float: right;
+    display: inline-block;
 }
 
 #header-content {
@@ -68,6 +101,9 @@ html a:hover {
     height: 81%;
 }
 
+#content {
+}
+
 #content-header {
     padding-left: 5%;
     padding-right: 5%;
@@ -75,6 +111,9 @@ html a:hover {
 
 #content-header h1 {
     font-weight: 300;
+    text-shadow: 1px 1px #DED6F8;
+    padding-bottom: 1.5%;
+    border-bottom: 1px solid #E8E4F7;
 }
 
 #content-main {
@@ -82,7 +121,8 @@ html a:hover {
 }
 
 #footer {
-    background-color: #5F6C72;
+    background-image: url("../images/textures/space_galaxy.jpg");
+    /*background-color: #B5DAEB;*/
     /*background: linear-gradient(to bottom, #fff, #b5b5b5);*/
 
     /* Only problem is that if we shrink the window, this keeps the footer frozen */
@@ -93,7 +133,7 @@ html a:hover {
     padding-left: 6%;
     padding-right: 6%;
     padding-top: 0.2%;
-    height: 5%;
+    height: 1%;
 }
 
 .pull-right {

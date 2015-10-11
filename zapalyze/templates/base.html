@@ -26,9 +26,15 @@
     </head>
 
     <body>
+        <div id="top-border-span">
+        </div>
+
         <div id="header">
-            {% block header %}
-            {% endblock %}
+            <div id="header-content">
+                <div id="logo">zapalyze!</div>
+                {% block header %}
+                {% endblock %}
+            </div>
         </div>
 
         <div id="main">
