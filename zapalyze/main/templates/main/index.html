@@ -5,62 +5,33 @@
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {% endblock %}
 
-<script> //! Have wrap it in a script tag so that it appears as javascript
-    {% block head_onLoad %}
-
-        google.load('visualization', '1', {packages: ['corechart', 'line']});
-        google.setOnLoadCallback(drawChart);
-
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        function drawChart() {
-            var posting = $.get("{% url 'api:get_task_data_table_json' %}?pk={{ user.pk }}", function (jsonData) {
-                    var data = new google.visualization.DataTable(jsonData);
-                    var options = {
-                        title: 'Task Summary',
-                        vAxis: {
-                            title: 'Tasks Performed',
-                        },
-                        pointSize: 5,
-                        // width: 1500,
-                        height: 500,
-                    };
-                    var chart = new google.visualization.LineChart(document.getElementById('task_summary_chart'));
-                    chart.draw(data, options);
-                }); // end post   
-            } // end drawChart
-
-    {% endblock %}
-</script>
-
 {% block header %}
-    <div class="right-bar">
-        {% if user and not user.is_anonymous %}
-                <div class="username">{{ user.get_full_name|default:user.username }}</div>
-                <a href="{% url 'auth:logout' %}?next={{ request.path }}">Sign Out</a>
-        {% endif %}
+    <div class="icon-right">
     </div>
+{% endblock %}
+
+{% block main-image %}
+    <div id="main-image">
+        <h1>Visualize your productivity, analyze your Zaps. <br>Less talk, more charts.</h1>        
+        <div class="google-button">
+            {% if user.is_anonymous or not user %}
+                <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><img src="{% static 'images/google-buttons/web/1x/btn_google_signin_light_normal_web.png' %}" id="google-button"></a>
+            {% endif %}
+        </div>
+    </div>        
 {% endblock %}
 
 
 {% block main %}
     <div id="content">
-        {% if user.is_anonymous or not user %}
-            <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><img src="{% static 'images/google-buttons/web/1x/btn_google_signin_light_normal_web.png' %}" id="google-button" class="float-right"></a>
-        {% endif %}
+
+        <div id="content-main">
+
+            <div class="content-center">
+                <a href="https://github.com/suprafly"><img src="{% static 'images/github/icon_github-sign.svg' %}" class="icon"></a>
+                <a href="https://github.com/suprafly"><h3>View this project on GitHub.</h3></a>
+            </div>
+
+        </div>
     </div>
 {% endblock %}
