@@ -26,10 +26,16 @@ Login with the gmail account which corresponds to your Zapier account, and where
 * pip install django
 * pip install python-social-auth
 * pip install -U https://github.com/google/google-visualization-python/zipball/master
+* pip install Pillow
 
 *Google Auth*
 * You'll also need to [follow these instructions to setup Google Authentication|https://developers.google.com/gmail/api/quickstart/python]
  in order to get this working.
+
+
+# Comments
+
+* Space texture from: http://lyshastra.deviantart.com/art/Free-Space-Galaxy-Texture-435789256
 
 
 

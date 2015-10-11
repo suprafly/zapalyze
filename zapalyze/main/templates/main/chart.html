@@ -48,8 +48,8 @@
 {% block header %}
     <div class="right-bar">
         {% if user and not user.is_anonymous %}
-                {{ user.get_full_name|default:user.username }}
-                <a href="{% url 'auth:logout' %}?next={{ request.path }}">(Logout)</a>
+                <div class="username">{{ user.get_full_name|default:user.username }}</div>
+                <a href="{% url 'auth:logout' %}?next={{ request.path }}">Sign Out</a>
         {% endif %}
     </div>
 {% endblock %}
@@ -61,7 +61,8 @@
         </div>
 
         <div id="content-main">
-            <div id="task_summary_chart"></div>
+        {{ profile.avatar.url }}
+                <div id="task_summary_chart"></div>
         </div>
     </div>
 {% endblock %}

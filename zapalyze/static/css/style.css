@@ -83,9 +83,15 @@ html a:hover {
 }
 
 .right-bar {
-    padding-top: 1.5%;
+    text-align: right;
+    padding-top: 1%;
     float: right;
     display: inline-block;
+    font-weight: bold;
+}
+
+.right-bar a {
+    font-weight: normal;
 }
 
 #header-content {

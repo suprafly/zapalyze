@@ -8,6 +8,11 @@ def User():
     return get_user_model()
 
 
+class UserProfile(models.Model):
+    user   = models.OneToOneField(settings.AUTH_USER_MODEL)
+    avatar = models.ImageField(blank=True)
+
+
 class Zap(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=300)

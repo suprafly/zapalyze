@@ -1,8 +1,7 @@
 from __future__ import division
 from django.shortcuts import render, render_to_response
 
-import logging
-
+from social.backends.google import GoogleOAuth2
 from django.template.context import RequestContext
 import requests
 import json
@@ -117,11 +116,27 @@ def create_zaps_and_task_summaries(user, zap_task_tuple_list, timestamp):
             new_task_summary = TaskSummary(owner=user, zap=zap, date=tasks_date, number_of_tasks=number_of_tasks)
             new_task_summary.save() 
              
+
+# def update_user_profile(user):
+#     user_profile = None
+#     if UserProfile.objects.filter(user=user).exists():
+#         user_profile = UserProfile.objects.get(user=user)
+#     else:
+#         user_profile = UserProfile(user=user)
+#         user_profile.save()
+
+# def get_google_avatar():
+
+
 # -------- Views --------------------------------------------------------------------------------
 
 def index(request):
     user = request.user
-    context = RequestContext(request, {'request': request, 'user': user})
+    ctx = { 'request': request, 
+            'user': user
+            }
+    context = RequestContext(request, ctx)
+
     if user.is_authenticated():
         social = user.social_auth.get(provider='google-oauth2')
         task_summary_list = []    
