@@ -8,6 +8,7 @@ import json
 import base64
 import email
 import datetime
+import re
 
 from main.models import Zap, TaskSummary
 
@@ -78,10 +79,24 @@ def get_mime_messages(social, json_msgs):
         msg = email_response.json()
         msg_str = base64.urlsafe_b64decode(email_response.json()['raw'].encode('ASCII'))
         mime_msg = email.message_from_string(msg_str)
-        epoch_secs = ms_to_sec(email_response.json()['internalDate'])
-        timestamp = datetime.datetime.fromtimestamp(epoch_secs)
+        timestamp = get_timestamp_from_email_subject(msg_str)
         messages.append((mime_msg, timestamp))
     return messages
+
+def get_internal_date_timestamp(json_response):
+    '''
+        This is the date that Google received the email.
+    '''
+    epoch_secs = ms_to_sec(json_response['internalDate'])
+    return datetime.datetime.fromtimestamp(epoch_secs)
+
+def get_timestamp_from_email_subject(email_msg_str):
+    '''
+        This is the date for the Task Summary, stripped from the subject line.
+    '''
+    match = re.search('Subject: Your (\S*) Task Summary for ([\S \d]*)', email_msg_str)
+    task_summary_date = match.group(2)
+    return datetime.datetime.strptime(task_summary_date, '%b %d, %Y')
 
 def get_email_payload_list(task_summary_email):
     payload_list = []
@@ -105,29 +120,17 @@ def remove_uncaught_text(parsed_email):
 def create_zaps_and_task_summaries(user, zap_task_tuple_list, timestamp):
     for zap_name, task_str in zap_task_tuple_list:
         number_of_tasks = extract_task_count(task_str)
-        tasks_date = timestamp.date()
+        task_date = timestamp.date()
         zap = None
         if not Zap.objects.filter(owner=user, name=zap_name).exists():
             zap = Zap(owner=user, name=zap_name)
             zap.save()
         else:
             zap = Zap.objects.get(owner=user, name=zap_name)
-        if not TaskSummary.objects.filter(owner=user, zap=zap, date=tasks_date).exists():
-            new_task_summary = TaskSummary(owner=user, zap=zap, date=tasks_date, number_of_tasks=number_of_tasks)
+        if not TaskSummary.objects.filter(owner=user, zap=zap, date=task_date).exists():
+            new_task_summary = TaskSummary(owner=user, zap=zap, date=task_date, number_of_tasks=number_of_tasks)
             new_task_summary.save() 
              
-
-# def update_user_profile(user):
-#     user_profile = None
-#     if UserProfile.objects.filter(user=user).exists():
-#         user_profile = UserProfile.objects.get(user=user)
-#     else:
-#         user_profile = UserProfile(user=user)
-#         user_profile.save()
-
-# def get_google_avatar():
-
-
 # -------- Views --------------------------------------------------------------------------------
 
 def index(request):
