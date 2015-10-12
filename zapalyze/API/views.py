@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 
@@ -67,5 +67,4 @@ def get_task_data_table_json(request):
             return HttpResponse(resp, content_type="application/json")            
 
     # Fall through: Send them back to the main page
-    template = loader.get_template('main/index.html')
-    return render(request, 'main/index.html', ctx)    
+    return redirect('main.views.index')    

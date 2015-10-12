@@ -12,7 +12,7 @@
 
 {% block main-image %}
     <div id="main-image">
-        <h1>Visualize your productivity, analyze your Zaps. <br>Less talk, more charts.</h1>        
+        <h1>Productivity, visualized. Zaps and Tasks, analyzed. <br>Show me charts!</h1>        
         <div class="google-button">
             {% if user.is_anonymous or not user %}
                 <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><img src="{% static 'images/google-buttons/web/1x/btn_google_signin_light_normal_web.png' %}" id="google-button"></a>
