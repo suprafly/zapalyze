@@ -39,8 +39,19 @@
                     };
                     var chart = new google.visualization.LineChart(document.getElementById('task_summary_chart'));
                     chart.draw(data, options);
-                }); // end post   
-            } // end drawChart
+            }); // end post   
+        } // end drawChart
+
+        $(window).resize(function() {
+            if(this.resizeEvent) clearTimeout(this.resizeEvent);
+                this.resizeEvent = setTimeout(function() {
+                    $(this).trigger('trigger_resize');
+                }, 10);
+        });
+        
+        $(window).on('trigger_resize', function() {
+            drawChart();
+        });
 
     {% endblock %}
 </script>
