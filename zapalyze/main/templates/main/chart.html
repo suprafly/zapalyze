@@ -2,11 +2,7 @@
 
 {% block head %}
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-{% endblock %}
-
-<script> //! Have wrap it in a script tag so that it appears as javascript
-    {% block head_onLoad %}
-
+    <script>
         google.load('visualization', '1', {packages: ['corechart', 'line']});
         google.setOnLoadCallback(drawChart);
 
@@ -53,8 +49,8 @@
             drawChart();
         });
 
-    {% endblock %}
-</script>
+    </script>
+{% endblock %}
 
 {% block header %}
     <div class="right-bar">
