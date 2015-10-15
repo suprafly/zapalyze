@@ -2,3 +2,4 @@
 *.pyc
 *.rdb
 *sqlite3
+*settings.py
