@@ -164,6 +164,31 @@ html a:hover {
     padding-right: 2%;
 }
 
+.content-area {
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 2%;
+    padding-right: 2%;
+    margin-left: 35%;
+
+    width: 30%;
+
+    border: 2px solid #E8E4F7;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;    
+    border-radius: 4px;
+    *zoom: 1;    
+}
+
+.content-area h2 {
+    color: #312637;
+}
+
+.content-area ul li {
+    font-size: 120%;
+    color: #867290;
+}
+
 .content-center {
     margin-left: 20%;
     margin-right: 20%;
